@@ -1,6 +1,6 @@
 <?php
 
-$client_secret = "lfeKILJMFQVc3vXzW79B6TI5VKs8DFeT"; // This is a dummy value. Place your client_secret key here. You received it from Ecwid team in email when registering the app
+$client_secret = "7izspHUBbBfRJWaHpQ2O1eIEcOwDQJ6z"; // This is a dummy value. Place your client_secret key here. You received it from Ecwid team in email when registering the app
 //$cipher = "AES-128-CBC";
 $iv = "abcdefghijklmnopqrstuvwx";// this can be generated random if you plan to store it for later but in this case e.g. openssl_random_pseudo_bytes($ivlen);
 $cipher = "aes-128-gcm";
