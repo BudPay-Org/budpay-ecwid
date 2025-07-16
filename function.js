@@ -1,12 +1,12 @@
 // Initialize the application
 
-EcwidApp.init({
+Ecwid.init({
     app_id: "budpay", // use your application namespace
     autoloadedflag: true,
     autoheight: true
 });
 
-var storeData = EcwidApp.getPayload();
+var storeData = Ecwid.getPayload();
 var storeId = storeData.store_id;
 var accessToken = storeData.access_token;
 var language = storeData.lang;
@@ -152,12 +152,12 @@ initialConfig.public = JSON.stringify(initialConfig.public);
 // Executes when we have a new user install the app. It creates and sets the default data using Ecwid JS SDK and Application storage
 function createUserData() {
     // Saves data for application storage
-    EcwidApp.setAppStorage(initialConfig.private, function (value) {
+    Ecwid.setAppStorage(initialConfig.private, function (value) {
         console.log('Initial private user preferences saved!');
     });
 
     // Saves data for public app config
-    EcwidApp.setAppPublicConfig(initialConfig.public, function (value) {
+    Ecwid.setAppPublicConfig(initialConfig.public, function (value) {
         console.log('Initial public user preferences saved!');
     });
 
@@ -170,7 +170,7 @@ function createUserData() {
 
 function getUserData() {
     // Retrieve all keys and values from application storage, including public app config. Set the values for select, input and textarea elements on a page in a callback
-    EcwidApp.getAppStorage(function (allValues) {
+    Ecwid.getAppStorage(function (allValues) {
         setValuesForPage(allValues);
     });
 }
@@ -180,11 +180,11 @@ function getUserData() {
 function saveUserData() {
     var saveData = readValuesFromPage();
 
-    EcwidApp.setAppStorage(saveData.private, function (savedData) {
+    Ecwid.setAppStorage(saveData.private, function (savedData) {
         console.log('Private preferences saved!');
     });
 
-    EcwidApp.setAppPublicConfig(saveData.public, function (savedData) {
+    Ecwid.setAppPublicConfig(saveData.public, function (savedData) {
         console.log('Public preferences saved!');
     });
 }
@@ -197,7 +197,7 @@ function resetUserData(initialConfig) {
 
 // Main app function to determine if the user is new or just logs into the app
 
-EcwidApp.getAppStorage('installed', function (value) {
+Ecwid.getAppStorage('installed', function (value) {
     if (value !== null) {
         getUserData();
     } else {
