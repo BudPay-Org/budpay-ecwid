@@ -1,6 +1,6 @@
 <?php
 
-$client_secret = "7izspHUBbBfRJWaHpQ2O1eIEcOwDQJ6z"; // This is a dummy value. Place your client_secret key here. You received it from Ecwid team in email when registering the app
+$client_secret = "7izspHUBbBfRJWaHpQ2O1eIEcOwDQJ6z"; // This is a dummy value. Place your client_secret key here. You received it from Ecwid team in email when registering the app.
 //$cipher = "AES-128-CBC";
 $iv = "abcdefghijklmnopqrstuvwx";// this can be generated random if you plan to store it for later but in this case e.g. openssl_random_pseudo_bytes($ivlen);
 $cipher = "aes-128-gcm";
@@ -42,7 +42,7 @@ if (isset($_POST["data"])) {
         return $json_decoded;
     }
 
-    // Function to sign the payment request form
+    // Function to sign the payment request form.
     function payment_sign($query, $api_key)
     {
         $clear_text = '';
@@ -56,33 +56,34 @@ if (isset($_POST["data"])) {
         return str_replace('-', '', $hash);
     }
 
-    // Get payload from the POST and process it
+    // Get payload from the POST and process it.
     $ecwid_payload = $_POST['data'];
-    $client_secret = "your-client-secret";
+    $client_secret = "7izspHUBbBfRJWaHpQ2O1eIEcOwDQJ6z";
 
-    // The resulting JSON from payment request will be in $order variable
+    // The resulting JSON from payment request will be in $order variable.
     $order = getEcwidPayload($client_secret, $ecwid_payload);
 
     # New Session.
     session_start();
     session_id(md5($iv . $order['cart']['order']['id']));
 
-    // Account info from merchant app settings in app interface in Ecwid CP
+    // Account info from merchant app settings in app interface in Ecwid CP.
     // $x_account_id = $order['merchantAppSettings']['merchantId'];
-    $api_key = $order['merchantAppSettings']['publicKey'];
+    // $api_key = $order['merchantAppSettings']['publicKey'];
+    $api_key = 'pk_test_knvtsmigkpnydmtff8qvdr3xsyk6dmvo2zbzag';
     $encrypt_key = $order['merchantAppSettings']['encryptionKey'];
     $testmode = $order['merchantAppSettings']['testMode'];
 
-    // OPTIONAL: Split name field into two fields: first name and last name
+    // OPTIONAL: Split name field into two fields: first name and last name.
     $fullName = explode(" ", $order["cart"]["order"]["billingPerson"]["name"]);
     $firstName = $fullName[0];
     $lastName = $fullName[1];
 
-    // Encode access token and prepare callback URL template
+    // Encode access token and prepare callback URL template.
     $ciphertext_raw = openssl_encrypt($order['token'], $cipher, $client_secret, $options = 0, $iv, $tag);
     $callbackPayload = base64_encode($ciphertext_raw);
 
-    // Encode return URL
+    // Encode return URL.
     $returnUrl_raw = openssl_encrypt($order['returnUrl'], $cipher, $client_secret, $options = 0, $iv, $tag);
     $returnUrlPayload = base64_encode($returnUrl_raw);
 
@@ -113,12 +114,12 @@ if (isset($_POST["data"])) {
         "url_cancel" => $order["returnUrl"]
     );
 
-    // Sign the payment request
+    // Sign the payment request.
     $signature = payment_sign($request, $api_key);
     $request["x_signature"] = $signature;
 
 
-// Generate HTML form
+// Generate HTML form.
 $html = <<<PHP
 <!DOCTYPE html>
 <html>
@@ -182,7 +183,7 @@ echo $html;
 exit();
 }
 
-// If we are returning back to storefront. Callback from payment
+// If we are returning back to storefront. Callback from payment.
 
 if (isset($_GET["callbackPayload"]) && isset($_GET["status"])) {
 
@@ -201,16 +202,16 @@ if (isset($_GET["callbackPayload"]) && isset($_GET["status"])) {
     //TODO: Confirm the amount and currency paid before giving value.
 
 
-    // Prepare request body for updating the order
+    // Prepare request body for updating the order.
     $json = json_encode(array(
         "paymentStatus" => $status,
         "externalTransactionId" => "transaction_" . $orderNumber
     ));
 
-    // URL used to update the order via Ecwid REST API
+    // URL used to update the order via Ecwid REST API.
     $url = "https://app.ecwid.com/api/v3/$storeId/orders/transaction_$orderNumber?token=$token";
 
-    // Send request to update order
+    // Send request to update order.
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($json)));
@@ -220,7 +221,7 @@ if (isset($_GET["callbackPayload"]) && isset($_GET["status"])) {
     $response = curl_exec($ch);
     curl_close($ch);
 
-    // return customer back to storefront
+    // return customer back to storefront.
     echo "<script>window.location = '$returnUrl'</script>";
 
 } else {
