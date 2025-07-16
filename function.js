@@ -7,7 +7,6 @@ EcwidApp.init({
 });
 
 var storeData = EcwidApp.getPayload();
-
 var storeId = storeData.store_id;
 var accessToken = storeData.access_token;
 var language = storeData.lang;
