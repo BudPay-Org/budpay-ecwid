@@ -71,8 +71,8 @@ if (isset($_POST["data"])) {
     // $x_account_id = $order['merchantAppSettings']['merchantId'];
     // $api_key = $order['merchantAppSettings']['publicKey'];
     $api_key = 'pk_test_knvtsmigkpnydmtff8qvdr3xsyk6dmvo2zbzag';
-    $encrypt_key = $order['merchantAppSettings']['encryptionKey'];
-    $testmode = $order['merchantAppSettings']['testMode'];
+    // $encrypt_key = $order['merchantAppSettings']['encryptionKey'];
+    // $testmode = $order['merchantAppSettings']['testMode'];
 
     // OPTIONAL: Split name field into two fields: first name and last name.
     $fullName = explode(" ", $order["cart"]["order"]["billingPerson"]["name"]);
