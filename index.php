@@ -107,7 +107,7 @@ if (isset($_POST["data"])) {
         "lastName" => $lastName,
         "mobile" => $order["cart"]["order"]["billingPerson"]["phone"],
         "description" => "Order number" . $order['cart']['order']['referenceTransactionId'],
-        "reference" => $order['cart']['order']['referenceTransactionId'],
+        "reference" => $order['cart']['order']['referenceTransactionId']. '_' .uniqid(),
         "merchantReference" => $order['cart']['order']['referenceTransactionId'],
         "url_success" => $callbackUrl . "&status=PAID",
         "url_error" => $callbackUrl . "&status=CANCELLED",
