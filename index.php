@@ -169,7 +169,7 @@ $html = <<<PHP
                             ...style,
                             message: '<p> confirming transaction ...</p>'
                         });
-                        redirectPost(budpaypay_args.redirect_url + "?reference=" + tr, response);
+                        window.location = budpaypay_args.redirect_url + "&reference=" + tr
                     }
                     // this.onClose(); // close modal
                 },
