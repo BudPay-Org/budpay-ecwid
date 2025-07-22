@@ -165,10 +165,6 @@ $html = <<<PHP
                     var tr = response.reference;
                     if ( 'successful' === response.status.toLowerCase() ) {
                         payment_made = true;
-                        $.blockUI({
-                            ...style,
-                            message: '<p> confirming transaction ...</p>'
-                        });
                         window.location = budpaypay_args.redirect_url + "&reference=" + tr
                     }
                     // this.onClose(); // close modal
