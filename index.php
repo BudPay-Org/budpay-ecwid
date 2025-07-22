@@ -167,7 +167,8 @@ $html = <<<PHP
                     if ( 'successful' === response.status.toLowerCase() ) {
                         payment_made = true;
 			console.log(response)
-                        window.location = budpaypay_args.redirect_url + "&reference=" + tr
+                       //window.location = budpaypay_args.redirect_url + "&reference=" + tr
+	                window.location = "https://google.com"
                     }
                     // this.onClose(); // close modal
                 },
