@@ -154,6 +154,7 @@ $html = <<<PHP
             first_name: '{$request['firstName']}',
             last_name: '{$request['lastName']}',
             reference: '{$request['reference']}',
+	    redirect_url: '{$request['url_success']}',
             currency: '{$request['currency']}',
             cancel_url: '{$request['url_cancel']}',
         };
@@ -165,6 +166,7 @@ $html = <<<PHP
                     var tr = response.reference;
                     if ( 'successful' === response.status.toLowerCase() ) {
                         payment_made = true;
+			console.log(response)
                         window.location = budpaypay_args.redirect_url + "&reference=" + tr
                     }
                     // this.onClose(); // close modal
