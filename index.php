@@ -70,7 +70,7 @@ if (isset($_POST["data"])) {
     // Account info from merchant app settings in app interface in Ecwid CP.
     // $x_account_id = $order['merchantAppSettings']['merchantId'];
     // $api_key = $order['merchantAppSettings']['publicKey'];
-    $api_key = $_SERVER['BUDPAY_PUBLIC'];
+    $api_key = getenv('BUDPAY_PUBLIC');
     // $encrypt_key = $order['merchantAppSettings']['encryptionKey'];
     // $testmode = $order['merchantAppSettings']['testMode'];
 
@@ -204,7 +204,7 @@ if (isset($_GET["callbackPayload"]) && isset($_GET["status"])) {
 
     //TODO: Confirm the amount and currency paid before giving value.
     $budpay_verify_url = "https://api.budpay.com/api/v2/transaction/verify/" . $reference;
-    $budpay_secret_key = $_SERVER['BUDPAY_SECRET'] ?? null;
+    $budpay_secret_key = getenv('BUDPAY_SECRET') ?? null;
 
     if(is_null($budpay_secret_key)) {
         echo 'budpay credentials not set on verification';
