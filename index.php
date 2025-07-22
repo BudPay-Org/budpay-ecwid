@@ -70,7 +70,7 @@ if (isset($_POST["data"])) {
     // Account info from merchant app settings in app interface in Ecwid CP.
     // $x_account_id = $order['merchantAppSettings']['merchantId'];
     // $api_key = $order['merchantAppSettings']['publicKey'];
-    $api_key = 'pk_test_knvtsmigkpnydmtff8qvdr3xsyk6dmvo2zbzag';
+    $api_key = $_SERVER['BUDPAY_PUBLIC'];
     // $encrypt_key = $order['merchantAppSettings']['encryptionKey'];
     // $testmode = $order['merchantAppSettings']['testMode'];
 
@@ -87,9 +87,12 @@ if (isset($_POST["data"])) {
     $returnUrl_raw = openssl_encrypt($order['returnUrl'], $cipher, $client_secret, $options = 0, $iv, $tag);
     $returnUrlPayload = base64_encode($returnUrl_raw);
 
+    $reference = $order['cart']['order']['referenceTransactionId']. '_' .uniqid();
+
     $queryData = http_build_query([
         'storeId' => $order['storeId'],
         'orderNumber' => $order['cart']['order']['id'],
+        'reference' => $reference,
         'callbackPayload' => $callbackPayload,
     ]);
 
@@ -107,7 +110,7 @@ if (isset($_POST["data"])) {
         "lastName" => $lastName,
         "mobile" => $order["cart"]["order"]["billingPerson"]["phone"],
         "description" => "Order number" . $order['cart']['order']['referenceTransactionId'],
-        "reference" => $order['cart']['order']['referenceTransactionId']. '_' .uniqid(),
+        "reference" => $reference,
         "merchantReference" => $order['cart']['order']['referenceTransactionId'],
         "url_success" => $callbackUrl . "&status=PAID",
         "url_error" => $callbackUrl . "&status=CANCELLED",
@@ -187,20 +190,53 @@ exit();
 
 if (isset($_GET["callbackPayload"]) && isset($_GET["status"])) {
 
-    session_start();
-    session_id(md5($iv . $_GET['orderNumber']));
-    // Set variables
+    // session_start();
+    // session_id(md5($iv . $_GET['orderNumber']));
+    // Set variables.
     $c = base64_decode($_GET['callbackPayload']);
     $token = openssl_decrypt($c, $cipher, $client_secret, $options = 0, $iv, $tag);
     $storeId = $_GET['storeId'];
     $orderNumber = $_GET['orderNumber'];
+    $reference = $_GET['reference'];
     $status = $_GET['status'];
     $r = base64_decode($_SESSION["{$orderNumber}_returnUrl"]);
     $returnUrl = openssl_decrypt($r, $cipher, $client_secret, $options = 0, $iv, $tag);
-    session_destroy();
 
     //TODO: Confirm the amount and currency paid before giving value.
+    $budpay_verify_url = "https://api.budpay.com/api/v2/transaction/verify/" . $reference;
+    $budpay_secret_key = $_SERVER['BUDPAY_SECRET'] ?? null;
 
+    if(is_null($budpay_secret_key)) {
+        echo 'budpay credentials not set on verification';
+    }
+
+    // Initialize cURL session.
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $budpay_verify_url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Content-Type: application/json',
+        'Authorization: Bearer '. $budpay_secret_key
+    ));
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    // Execute cURL request.
+    $response = curl_exec($ch);
+
+    // Check for errors.
+    if (curl_errno($ch)) {
+        $error_msg = curl_error($ch);
+    }
+
+    curl_close($ch);
+
+    // Optionally handle the response.
+    if (isset($error_msg)) {
+        // Handle error
+        // echo "cURL Error: " . $error_msg;
+    } else {
+        $data = json_decode($response, true);
+    }
 
     // Prepare request body for updating the order.
     $json = json_encode(array(
@@ -225,8 +261,6 @@ if (isset($_GET["callbackPayload"]) && isset($_GET["status"])) {
     echo "<script>window.location = '$returnUrl'</script>";
 
 } else {
-
     header('HTTP/1.0 403 Forbidden');
     echo 'Access forbidden!';
-
 }
