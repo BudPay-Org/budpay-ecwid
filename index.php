@@ -1,10 +1,8 @@
 <?php
-
-$client_secret = "7izspHUBbBfRJWaHpQ2O1eIEcOwDQJ6z"; // This is a dummy value. Place your client_secret key here. You received it from Ecwid team in email when registering the app.
 //$cipher = "AES-128-CBC";
 $iv = "abcdefghijklmnopqrstuvwx";// this can be generated random if you plan to store it for later but in this case e.g. openssl_random_pseudo_bytes($ivlen);
 $cipher = "aes-128-gcm";
-$ivlen = openssl_cipher_iv_length($cipher = "AES-128-CBC");
+// $ivlen = openssl_cipher_iv_length($cipher = "AES-128-CBC");
 $tag = 0;
 
 if (isset($_POST["data"])) {
@@ -127,6 +125,26 @@ $html = <<<PHP
 <!DOCTYPE html>
 <html>
 <body>
+    <script>
+        function redirectPost(location, args) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = location;
+
+            for (const key in args) {
+                if (args.hasOwnProperty(key)) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = args[key];
+                    form.appendChild(input);
+                }
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
     <script src="https://inlinepay.budpay.com/budpay-inline-custom.js"></script>
     <script>
         const budpaypay_args = {
@@ -137,7 +155,6 @@ $html = <<<PHP
             last_name: '{$request['lastName']}',
             reference: '{$request['reference']}',
             currency: '{$request['currency']}',
-            redirect_url: '{$request['url_success']}',
             cancel_url: '{$request['url_cancel']}',
         };
         console.log(budpaypay_args);
@@ -146,14 +163,13 @@ $html = <<<PHP
                 ...budpaypay_args,
                 callback: function (response) {
                     var tr = response.reference;
-                    console.log(response);
                     if ( 'successful' === response.status.toLowerCase() ) {
                         payment_made = true;
                         $.blockUI({
                             ...style,
                             message: '<p> confirming transaction ...</p>'
                         });
-                        // redirectPost(budpaypay_args.redirect_url + "?reference=" + tr, response);
+                        redirectPost(budpaypay_args.redirect_url + "?reference=" + tr, response);
                     }
                     // this.onClose(); // close modal
                 },
@@ -189,7 +205,7 @@ exit();
 // If we are returning back to storefront. Callback from payment.
 
 if (isset($_GET["callbackPayload"]) && isset($_GET["status"])) {
-
+    $client_secret = "7izspHUBbBfRJWaHpQ2O1eIEcOwDQJ6z";
     // session_start();
     // session_id(md5($iv . $_GET['orderNumber']));
     // Set variables.
