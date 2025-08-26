@@ -109,6 +109,11 @@ if (isset($_POST["data"])) {
         "mobile" => $order["cart"]["order"]["billingPerson"]["phone"],
         "description" => "Order number" . $order['cart']['order']['referenceTransactionId'],
         "reference" => $reference,
+		"metadata" => [
+			"callbackPayload" => $callbackPayload,
+			"orderNumber" => $order['cart']['order']['id'],
+			"storeId" => $order['storeId']
+		], 
         "merchantReference" => $order['cart']['order']['referenceTransactionId'],
         "url_success" => $callbackUrl . "&status=PAID",
         "url_error" => $callbackUrl . "&status=CANCELLED",
